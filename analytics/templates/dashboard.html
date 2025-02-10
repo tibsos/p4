@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Консоль Статистики</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* Плавное изменение фона */
+        @keyframes gradientAnimation {
+            0% { background: #d8d1a2; }
+            50% { background: #fff; }
+            100% { background: #333; }
+        }
+
+        body {
+            animation: gradientAnimation 12s infinite alternate ease-in-out;
+            transition: background 5s ease-in-out;
+            color: #222;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Заголовки - всегда прописные буквы */
+        h1, h3, h4 {
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            color: #222;
+        }
+
+        /* Карточки */
+        .card {
+            background: #d8d1a2;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-bottom: 2px solid #222;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Таблица */
+        .table {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background: #333;
+            color: white;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .table td {
+            text-align: center;
+        }
+
+        /* Графики */
+        canvas {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Консоль Статистики</h1>
+
+        <!-- Статистика по устройствам -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <img src="{% static 'computer.png' %}" alt="Компьютеры">
+                    <h4>Компьютеры</h4>
+                    <p class="fs-4">{{ device_stats.computer }}</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <img src="{% static 'mobile.png' %}" alt="Мобильные">
+                    <h4>Мобильные</h4>
+                    <p class="fs-4">{{ device_stats.mobile }}</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <img src="{% static 'time.png' %}" alt="Время на сайте">
+                    <h4>Среднее время на сайте</h4>
+                    <p class="fs-4">
+                        {{ average_view_time_minutes }} мин {{ average_view_time_seconds }} сек
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Диаграмма посещений -->
+        <div class="row">
+            <div class="col-md-12">
+                <canvas id="visitChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Детали посетителей -->
+        <div class="mt-5">
+            <h3 class="text-center">Детали посещений</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>IP</th>
+                        <th>Страна</th>
+                        <th>Время входа</th>
+                    </tr>
+                </thead>
+                <tbody id="visitor-details">
+                    {% for visitor in visitor_details %}
+                    <tr>
+                        <td>{{ visitor.ip }}</td>
+                        <td>{{ visitor.country }}</td>
+                        <td>{{ visitor.entered_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const visitChartCtx = document.getElementById('visitChart').getContext('2d');
+
+        let visitChart = new Chart(visitChartCtx, {
+            type: 'line',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    label: 'Ежедневные посещения',
+                    data: {{ chart_data|safe }},
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.4,
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Дата' }},
+                    y: { title: { display: true, text: 'Посещения' }}
+                }
+            }
+        });
+
+        // Функция для плавной смены фона
+        function changeBackground() {
+            document.body.style.transition = 'background 10s ease-in-out';
+            const colors = ['#d8d1a2', '#fff', '#333'];
+            let currentColorIndex = 0;
+
+            setInterval(() => {
+                document.body.style.background = colors[currentColorIndex];
+                currentColorIndex = (currentColorIndex + 1) % colors.length;
+            }, 12000); // Меняется каждые 12 секунд
+        }
+
+        changeBackground();
+    </script>
+</body>
+</html>

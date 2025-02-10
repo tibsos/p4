@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Style Smooth Scroll</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* Disable default scrolling */
+            scroll-behavior: smooth; /* Enable smooth scrolling */
+        }
+
+        section {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: white;
+            text-align: center;
+            transition: background-color 0.5s ease;
+        }
+
+        section:nth-child(odd) {
+            background-color: #333;
+        }
+
+        section:nth-child(even) {
+            background-color: #555;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            font-size: 1.2rem;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#section1">Section 1</a>
+        <a href="#section2">Section 2</a>
+        <a href="#section3">Section 3</a>
+        <a href="#section4">Section 4</a>
+    </nav>
+
+    <section id="section1">Welcome to Section 1</section>
+    <section id="section2">Explore Section 2</section>
+    <section id="section3">Discover Section 3</section>
+    <section id="section4">End at Section 4</section>
+
+    <script>
+        const sections = document.querySelectorAll("section");
+        let currentSection = 0;
+        let isScrolling = false; // Prevent multiple scroll events
+
+        window.addEventListener("wheel", (event) => {
+            if (isScrolling) return; // Prevents multiple triggers
+
+            isScrolling = true;
+
+            if (event.deltaY > 0) {
+                // Scroll down
+                if (currentSection < sections.length - 1) {
+                    currentSection++;
+                }
+            } else {
+                // Scroll up
+                if (currentSection > 0) {
+                    currentSection--;
+                }
+            }
+
+            sections[currentSection].scrollIntoView({ 
+                behavior: "smooth" 
+            });
+
+            setTimeout(() => {
+                isScrolling = false; // Re-enable scrolling after animation
+            }, 1000); // Adjust timeout to match the animation speed
+        });
+    </script>
+</body>
+</html>
