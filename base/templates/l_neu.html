@@ -1827,6 +1827,8 @@
 
           }
 
+          .advantage {text-shadow: #FC0 1px 0 10px;}
+
           #why-us {
 
             display: grid;
@@ -2104,6 +2106,12 @@
 
             }
 
+            .portfolio-img {
+
+              object-fit: fill;
+
+            }
+
             /* SEC 6 */
 
             .plans {
@@ -2352,7 +2360,6 @@
 
           }
 
-
           #h12 {
 
             font-size: 17px;
@@ -2502,7 +2509,7 @@
 
             border-radius: 0px;
 
-            object-fit: cover;
+            object-fit: fill;
 
           }
 
@@ -5229,6 +5236,37 @@
 
 
   </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.matchMedia("(max-width: 1299px)").matches) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            let visibleAdvantage = null;
+  
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                visibleAdvantage = entry.target;
+              }
+            });
+  
+            if (visibleAdvantage) {
+              document.querySelectorAll(".advantage").forEach((adv) => {
+                adv.classList.remove("current");
+              });
+              visibleAdvantage.classList.add("current");
+            }
+          },
+          { threshold: 0.6 }
+        );
+  
+        document.querySelectorAll(".advantage").forEach((adv) => {
+          observer.observe(adv);
+        });
+      }
+    });
+  </script>
+  
+  
 
   <!-- LOGO ANIMATION -->
   <script>
